@@ -1,0 +1,19 @@
+{
+  "name": "tag-guessr",
+  "version": "0.1.0",
+  "description": "a simple html tag guessing game inspired by https://tag-memory-test.vercel.app/",
+  "main": "src/index.html",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "html",
+    "tag",
+    "game"
+  ],
+  "author": "dev@dschopper.de",
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.17.19"
+  }
+}
