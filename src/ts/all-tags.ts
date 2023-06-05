@@ -1,4 +1,4 @@
-const Els = [
+export const allTags= [
 "html",
 "base",
 "head",
