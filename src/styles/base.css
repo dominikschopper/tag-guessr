@@ -132,7 +132,7 @@ a.navigation-link:hover {
 }
 
 .page-content {
-    background-color: var(--cpr-lightblue-50);
+    background-color: var(--cpr-lightblue);
 }
 
 .explanation {
@@ -144,7 +144,31 @@ a.navigation-link:hover {
 }
 
 .number-3digs {
-    width: 5ch;
+    min-width: 5ch;
+    width: auto;
+    max-width: 9ch;
+}
+
+.game {
+    background-color: var(--cpr-lightblue);
+}
+
+.game-timer {
+    font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-weight: bold;
+    color: var(--cpr-red);
+}
+
+.two-cols {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3rem;
+    align-items: flex-end;
+}
+
+.guess-error {
+    color: var(--cpr-red);
+    font-weight: bold;
 }
 
 .result {

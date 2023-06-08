@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="styles/reset.css">
     <link rel="stylesheet" href="styles/colors.css">
     <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/collapsible.css">
 </head>
 <body>
     <header class="container header">
@@ -37,30 +38,37 @@
 
     <main class="container page-content">
 
-        <article aria-labelledby="game-explanation-title" class="explanation">
-            <h2 class="explanation-title" id="game-explanation-title">A short explanation of the game</h2>
-            <p>
-                This game is about checking how many of the different HTML tags do you know.<br/>
-                Just fill in a tag name (case doesn't matter) and hit enter or click the button.
-                Every correct tag name will be counted, along with the time after you entered the first tag.
-                there are <span data-template="alltags.length"></span> of tags you could know.
-            </p>
-            <p>
-                When you are done hit the end game button. At the moment there is no way to save your time
-                or amount of tags you remembered - sorry!
-            </p>
+        <article aria-labelledby="game-explanation-title" class="explanation collapsible" aria-live="polite" id="collapsible-1" aria-expanded="false">
+            <h2 class="explanation-title collapsible-header" id="game-explanation-title" aria-controls="collapsible-content">A short explanation of the game</h2>
+            <div class="collapsible-content" id="collapsible-content">
+                <p>
+                    This game is about checking how many of the different HTML tags do you know.<br/>
+                    Just fill in a tag name (case doesn't matter) and hit enter or click the button.
+                    Every correct tag name will be counted, along with the time after you entered the first tag.
+                    there are <span data-template="alltags.length"></span> of tags you could know.
+                </p>
+                <p>
+                    When you are done hit the end game button. At the moment there is no way to save your time
+                    or amount of tags you remembered! So maybe it will be added in the future.
+                </p>
+            </div>
         </article>
 
-        <section label="the game" id="the-game">
+        <section label="the game" id="the-game" class="game">
             <form action="#guess-form" id="guess-form">
                 <fieldset>
                     <legend>guess tags</legend>
 
-                    <label for="guessed-tag">
-                        Enter a valid HTML tag:<br/>
-                        <input type="text" value="" name="guess" id="guessed-tag" autocomplete="false">
-                    </label>
-                    <button type="submit">guess a tag</button>
+                    <div class="two-cols">
+                        <div>
+                            <label for="guessed-tag">
+                                Enter a valid HTML tag:<br/>
+                                <input type="text" value="" name="guess" id="guessed-tag" autocomplete="off" placeholder="enter an html tag">
+                            </label>
+                            <button type="submit">guess a tag</button>
+                        </div>
+                        <p class="guess-error" aria-live="polite" id="tag-error"></p>
+                    </div>
                 </fieldset>
 
             </form>
@@ -74,20 +82,50 @@
                 </fieldset>
             </form>
 
-            <label for="no-guessed-tags">
-                Number of correctly guessed tags:<br/>
-                <input type="number" id="no-guessed-tags" class="number-3digs" value="0" readonly maxlength="3" /> of <span data-template="alltags.length"></span>
-            </label>
+            <div class="two-cols">
+
+                <label for="no-guessed-tags">
+                    Number of correctly guessed tags:<br/>
+                    <input type="number" id="no-guessed-tags" class="number-3digs" value="0" readonly maxlength="3" /> of <span data-template="alltags.length"></span>
+                </label>
+
+                <label for="no-wrong-tags">
+                    Number of incorrectly guessed tags:<br/>
+                    <input type="number" id="no-wrong-tags" class="number-3digs" value="0" readonly maxlength="3" />
+                </label>
+            </div>
 
             <div class="result">
+                <p>Game runs since
+                    <span id="game-timer" class="game-timer">0s</span>
+                </p>
                 <p id="resultlist-explanation">
-                    correctly guessed tags will be shown here (in alphabetical order):
+                    correctly guessed tags will be shown here (in the order they were entered):
                     <ul class="resultlist" id="correctly-guessed-tags" aria-labelledby="resultlist-explanation" aria-live="polite"></ul>
                 </p>
             </div>
         </section>
 
     </main>
+
+    <script>
+        const coll = document.getElementById('collapsible-1');
+        coll.addEventListener('click', function (ev) {
+            this.setAttribute('aria-expanded', `${this.getAttribute('aria-expanded') === 'false'}`);
+        });
+    </script>
+
+    <script>
+        const guessForm = document.getElementById('guess-form')
+        guessForm.addEventListener('submit', (ev) => {
+            console.log('SUBMIT!!', ev);
+        })
+        const gameForm = document.getElementById('game-form')
+    </script>
+
+    <script>
+
+    </script>
 
     <footer class="container footer">
         <p>
