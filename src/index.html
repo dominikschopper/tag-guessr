@@ -54,7 +54,7 @@
             </div>
         </article>
 
-        <section label="the game" id="the-game" class="game">
+        <section aria-label="the game" id="the-game" class="game">
             <form action="#guess-form" id="guess-form">
                 <fieldset>
                     <legend>guess tags</legend>
@@ -110,7 +110,7 @@
 
     <script>
         const coll = document.getElementById('collapsible-1');
-        coll.addEventListener('click', function (ev) {
+        coll.addEventListener('click', function () {
             this.setAttribute('aria-expanded', `${this.getAttribute('aria-expanded') === 'false'}`);
         });
     </script>
