@@ -46,7 +46,6 @@ describe('the TagGuessr Game Functionality', () => {
             jest.useFakeTimers();
 
             const gameTimeMs = 121100;
-            const gameTimeS = Math.floor(gameTimeMs / 1000);
 
             game.start();
 
