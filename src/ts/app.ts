@@ -22,7 +22,7 @@ function initialize() {
     const game = useGame();
     const guesses = useGuessedTags();
 
-    doc.addEventListener('readystatechange', (ev) => {
+    doc.addEventListener('readystatechange', () => {
         const guessInput = doc.querySelector<HTMLInputElement>(selectors.GUESS_INPUT) ?? doc.createElement('input');
         const resultList = doc.querySelector<HTMLUListElement>(selectors.RESULT_LIST) ?? doc.createElement('ul');
         const resultNo: HTMLInputElement | null = doc.querySelector<HTMLInputElement>(selectors.NO_OF_TAGS) ?? doc.createElement('input');
@@ -42,7 +42,7 @@ function initialize() {
             throw new Error('Cannot start game, since page is not correctly rendered');
         }
 
-        let timerId: Timer;
+        let timerId: any;
         doc.querySelector(selectors.GUESS_FORM)?.addEventListener('submit', (ev) => {
             ev.preventDefault();
             if (game.wasNotStartedYet) {
@@ -100,7 +100,7 @@ function initialize() {
         el.textContent = secAsHumanReadable(timeInSecs);
     }
 
-    function startAutoUpdate(el: HTMLElement, game: TagGuessrGame): Timer {
+    function startAutoUpdate(el: HTMLElement, game: TagGuessrGame): any {
         return setInterval(() => {
             updateTimeElapsed(el, game.elapsedTime);
         }, 500);
