@@ -3,19 +3,28 @@ import { normalizeTag } from './normalize-tag';
 
 export type GuessedError = string|null;
 export interface Guesses {
-    correctCount(): number;
-    incorrectCount(): number;
+    correct: number;
+    incorrect: number;
     add(tag: string): GuessedError;
     reset(): void;
+    list: string[];
 }
 
-export const guessedTags: Guesses = (function (): Guesses {
+export default function useGuessedTags(): Guesses {
     const guesses: string[] = [];
     let incorrect = 0;
+
     return {
-        correctCount: () => guesses.length,
-        incorrectCount: () => incorrect,
-        add: (tag: string): GuessedError => {
+        get correct() {
+            return guesses.length;
+        },
+        get incorrect() {
+            return incorrect;
+        },
+        get list() {
+            return guesses.sort();
+        },
+        add(tag: string): GuessedError {
             const normalizedTag = normalizeTag(tag);
             if (!tagNames.isValid(normalizedTag)) {
                 incorrect += 1;
@@ -32,6 +41,6 @@ export const guessedTags: Guesses = (function (): Guesses {
             incorrect = 0;
         }
     };
-})()
+};
 
 
