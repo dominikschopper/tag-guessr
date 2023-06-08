@@ -1,4 +1,6 @@
 import { allTags as rawTags } from "./all-tags";
+import useGuessedTags from "./guessed-tags";
+import useGame, {TagGuessrGame} from "./tag-guessr-game";
 
 const allTags = rawTags.map((t: string) => t.toUpperCase()).sort();
 
@@ -9,74 +11,125 @@ function initialize() {
         GUESS_INPUT: '#guessed-tag',
         GAME_FORM: '#game-form',
         NO_OF_TAGS: '#no-guessed-tags',
+        NO_OF_BAD_TAGS: '#no-wrong-tags',
         ALLTAGS_LENGTH: '[data-template="alltags.length"]',
-        RESULT_LIST: '#correctly-guessed-tags'
+        RESULT_LIST: '#correctly-guessed-tags',
+        GUESS_ERROR: '#tag-error',
+        timer: '#game-timer'
     } as const;
 
 
-    function replaceLengthOnLoad(tags: string[]) {
-        const allLengthElements = doc.querySelectorAll(selectors.ALLTAGS_LENGTH);
-        allLengthElements.forEach(el => {
-            el.textContent = tags.length.toString(10);
-        });
-    }
+    const game = useGame();
+    const guesses = useGuessedTags();
 
     doc.addEventListener('readystatechange', (ev) => {
-        const guessInput = doc.querySelector<HTMLInputElement>(selectors.GUESS_INPUT);
-        const resultList = doc.querySelector<HTMLUListElement>(selectors.RESULT_LIST);
+        const guessInput = doc.querySelector<HTMLInputElement>(selectors.GUESS_INPUT) ?? doc.createElement('input');
+        const resultList = doc.querySelector<HTMLUListElement>(selectors.RESULT_LIST) ?? doc.createElement('ul');
+        const resultNo: HTMLInputElement | null = doc.querySelector<HTMLInputElement>(selectors.NO_OF_TAGS) ?? doc.createElement('input');
+        const wrongNo: HTMLInputElement | null = doc.querySelector<HTMLInputElement>(selectors.NO_OF_BAD_TAGS) ?? doc.createElement('input');
+        const errorElement = doc.querySelector(selectors.GUESS_ERROR) ?? doc.createElement('p');
+        const gameTimer: HTMLElement = doc.querySelector(selectors.timer) ?? doc.createElement('span');
+        const allLengthElements = doc.querySelectorAll(selectors.ALLTAGS_LENGTH);
+
+        function replaceCompleteTagLength(tags: string[]) {
+            allLengthElements.forEach(el => {
+                el.textContent = tags.length.toString(10);
+            });
+        }
+        replaceCompleteTagLength(allTags);
 
         if (!resultList) {
             throw new Error('Cannot start game, since page is not correctly rendered');
         }
 
-        replaceLengthOnLoad(allTags);
+        let timerId: Timer;
         doc.querySelector(selectors.GUESS_FORM)?.addEventListener('submit', (ev) => {
             ev.preventDefault();
-            console.log(ev, guessInput?.value);
-            const newGuessedTag = guessInput?.value ?? '-';
-            guessedTags = handleTagSubmission(newGuessedTag);
-            renderGuessedTagsTo(resultList, guessedTags);
+            if (game.wasNotStartedYet) {
+                game.start();
+                timerId = startAutoUpdate(gameTimer, game);
+            }
+            const newGuessedTag = guessInput?.value.trim() ?? '';
+            if (newGuessedTag.length < 1) {
+                return;
+            }
+            const err = guesses.add(newGuessedTag);
+            errorElement.textContent = '';
+            if (err === null) {
+                renderGuessedTagsTo(resultList, newGuessedTag);
+            } else {
+                errorElement.textContent = err;
+            }
+
+            setValueOf(resultNo, guesses.correct);
+            setValueOf(wrongNo, guesses.incorrect);
+
+            guessInput.value = '';
+            guessInput.focus();
         });
+
+        doc.querySelector(selectors.GAME_FORM)?.addEventListener('submit', (ev) => {
+            ev.preventDefault();
+            if (game.isRunning) {
+                game.stop();
+                clearInterval(timerId);
+            }
+            guessInput.focus();
+        })
+
+        doc.querySelector(selectors.GAME_FORM)?.addEventListener('reset', (ev) => {
+            ev.preventDefault();
+            if (game.isRunning) {
+                game.stop();
+                clearInterval(timerId);
+            }
+
+            game.reset();
+            guesses.reset();
+
+            resetGuessedTags(resultList);
+            updateTimeElapsed(gameTimer, 0);
+            setValueOf(resultNo, guesses.correct);
+            setValueOf(wrongNo, guesses.incorrect);
+
+            guessInput.focus();
+        })
     });
 
+    function updateTimeElapsed(el: HTMLElement, timeInSecs: number) {
+        el.textContent = secAsHumanReadable(timeInSecs);
+    }
 
+    function startAutoUpdate(el: HTMLElement, game: TagGuessrGame): Timer {
+        return setInterval(() => {
+            updateTimeElapsed(el, game.elapsedTime);
+        }, 500);
+    }
 }
 
 initialize();
 
-function isItInList(tag: string, list: string[]): boolean {
-    return list.includes(tag);
+function renderGuessedTagsTo(ul: HTMLUListElement, nextGoodGuess: string) {
+    const li = document.createElement('li');
+    li.id = `guessed-tag-${nextGoodGuess}`;
+    li.innerText = nextGoodGuess;
+    ul.appendChild(li);
 }
 
-function isInAllTagsList(tag: string): boolean {
-    return isItInList(tag, allTags);
+function resetGuessedTags(ul: HTMLUListElement) {
+    ul.innerHTML = '';
 }
 
-let guessedTags: string[] = [];
-
-function isNotInGuessedTagsList(tag: string): boolean {
-    return !isItInList(tag, guessedTags);
+function setValueOf(inputEl: HTMLInputElement, value: string|number) {
+    inputEl.value = `${value}`;
 }
 
-function handleTagSubmission(tag: string): string[] {
-    const myGuessedTags = [...guessedTags];
-    tag = tag.toUpperCase();
-    if (isInAllTagsList(tag) && isNotInGuessedTagsList(tag)) {
-        myGuessedTags.push(tag);
-        myGuessedTags.sort();
+function secAsHumanReadable(sec: number): string {
+    const minInSec = 60;
+    if (sec < 60) {
+        return `${sec}s`;
     }
-    return myGuessedTags;
-}
-
-function renderGuessedTagsTo(ul: HTMLUListElement, goodGuesses: string[]) {
-    Array.from(ul.children).forEach(li => {
-        ul.removeChild(li);
-    });
-
-    goodGuesses.forEach(tag => {
-        debugger;
-        const li = new HTMLLIElement();
-        li.id = `guessed-tag-${tag}`;
-        ul.appendChild(li);
-    });
+    const remaining = sec % minInSec;
+    const min = (sec - remaining) / minInSec;
+    return `${min}min ${remaining}s`;
 }
