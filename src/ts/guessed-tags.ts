@@ -5,9 +5,15 @@ export type GuessedError = string|null;
 export interface Guesses {
     correct: number;
     incorrect: number;
+    list: string[];
     add(tag: string): GuessedError;
     reset(): void;
-    list: string[];
+    /**
+     *
+     * @param tagString
+     * @returns {number} the number of strings successfully parsed
+     */
+    addTagsFromString(tagString: string): number;
 }
 
 export default function useGuessedTags(): Guesses {
@@ -25,6 +31,9 @@ export default function useGuessedTags(): Guesses {
             return guesses.sort();
         },
         add(tag: string): GuessedError {
+            if (tag.length === 0) {
+                return null;
+            }
             const normalizedTag = normalizeTag(tag);
             if (!tagNames.isValid(normalizedTag)) {
                 incorrect += 1;
@@ -39,6 +48,18 @@ export default function useGuessedTags(): Guesses {
         reset() {
             guesses.length = 0;
             incorrect = 0;
+        },
+        addTagsFromString(tagString): number {
+            if (tagString.length === 0) {
+                return 0;
+            }
+            const tags = tagString.toLowerCase()
+                .trim()
+                .split(/\W+/);
+            tags.forEach(tag => {
+                this.add(tag);
+            });
+            return this.correct;
         }
     };
 };

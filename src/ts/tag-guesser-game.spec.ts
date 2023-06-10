@@ -1,10 +1,10 @@
-import useGame, { TagGuessrGame } from "./tag-guessr-game";
+import gameFactory, {TagGuessrGame} from "./game-factory";
 
-describe('the TagGuessr Game Functionality', () => {
+describe('the TagGuessr Default Game Functionality', () => {
     let game: TagGuessrGame;
     describe('starting and running the game', () => {
         beforeEach(() => {
-            game = useGame();
+            game = gameFactory();
         });
 
         it('should return 0s as elapsed time when the game is not yet started', () => {

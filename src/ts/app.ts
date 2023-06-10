@@ -1,6 +1,7 @@
 import { allTags as rawTags } from "./all-tags";
 import useGuessedTags from "./guessed-tags";
-import useGame, {TagGuessrGame} from "./tag-guessr-game";
+
+import gameFactory, {TagGuessrGame} from "./game-factory";
 
 const allTags = rawTags.map((t: string) => t.toUpperCase()).sort();
 
@@ -19,7 +20,7 @@ function initialize() {
     } as const;
 
 
-    const game = useGame();
+    const game = gameFactory();
     const guesses = useGuessedTags();
 
     doc.addEventListener('readystatechange', () => {
