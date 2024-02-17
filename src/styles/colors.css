@@ -5,7 +5,7 @@
     --cpr-brown-50: rgb(132 117 117 / 0.5);
     --cpr-blue: rgb(148 188 229);
     --cpr-blue-50: rgb(148 188 229 / 0.5);
-    --cpr-lightblue: rgb(205 220 243);
+    --cpr-lightblue: rgba(205, 220, 243, 0.75);
     --cpr-lightblue-50: rgb(205 220 243 / 0.5);
     --cpr-lightyellow: rgb(255 249 199);
     --cpr-lightyellow-50: rgb(255 249 199 / 0.5);

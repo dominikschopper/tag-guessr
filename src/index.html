@@ -3,33 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, user-scalable=yes, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>HTML guessing game</title>
 
-    <link rel="stylesheet" href="styles/reset.css">
-    <link rel="stylesheet" href="styles/colors.css">
-    <link rel="stylesheet" href="styles/base.css">
-    <link rel="stylesheet" href="styles/collapsible.css">
+    <link rel="stylesheet" href="styles/reset.css" />
+    <link rel="stylesheet" href="styles/style.css" />
 </head>
 <body>
     <header class="container header">
 
         <hgroup>
             <h1 class="page-title">Tag Guessr</h1>
-            <p class="page-subline">How much html do you know?</p>
+            <p class="page-subline">How many html tags do you know?</p>
         </hgroup>
 
         <nav>
-            <ul class="navigation-list">
-                <li class="navigation-entry" aria-selected="true">
-                    <a class="navigation-link" href="#/simple">Simple Version</a>
+            <ul role="menu"  class="navigation-list">
+                <li role="menuitem" class="navigation-entry">
+                    <a class="navigation-link" href="#simple">Simple Version</a>
                 </li>
-                <li class="navigation-entry">
-                    <a class="navigation-link" href="#/timed-90s">90s Version</a>
+                <li role="menuitem" class="navigation-entry">
+                    <a class="navigation-link" href="#timed-90s">90s Version</a>
                 </li>
-                <li class="navigation-entry">
-                    <a class="navigation-link" href="#/timed-60s">60s Version</a>
+                <li role="menuitem" class="navigation-entry">
+                    <a class="navigation-link" href="#timed-60s">60s Version</a>
                 </li>
             </ul>
         </nav>
@@ -38,8 +36,15 @@
 
     <main class="container page-content">
 
-        <article aria-labelledby="game-explanation-title" class="explanation collapsible" aria-live="polite" id="collapsible-1" aria-expanded="false">
-            <h2 class="explanation-title collapsible-header" id="game-explanation-title" aria-controls="collapsible-content">A short explanation of the game</h2>
+        <section class="explanation collapsible"
+                 id="collapsible-1"
+                 aria-labelledby="game-explanation-title"
+                 aria-expanded="false"
+        >
+            <h2 class="explanation-title collapsible-header" id="game-explanation-title">
+                A short explanation of the game
+                <button aria-controls="collapsible-content"><span class="sr-only">show explanation</span></button>
+            </h2>
             <div class="collapsible-content" id="collapsible-content">
                 <p>
                     This game is about checking how many of the different HTML tags do you know.<br/>
@@ -52,18 +57,19 @@
                     or amount of tags you remembered! So maybe it will be added in the future.
                 </p>
             </div>
-        </article>
+        </section>
 
         <section aria-label="the game" id="the-game" class="game">
+            <h3>The Game</h3>
             <form action="#guess-form" id="guess-form">
                 <fieldset>
-                    <legend>guess tags</legend>
+                    <legend>guess</legend>
 
                     <div class="two-cols">
                         <div>
                             <label for="guessed-tag">
                                 Enter a valid HTML tag:<br/>
-                                <input type="text" value="" name="guess" id="guessed-tag" autocomplete="off" placeholder="enter an html tag">
+                                <input type="text" value="" name="guess" id="guessed-tag" autocomplete="off" placeholder="enter a valid html tag">
                             </label>
                             <button type="submit">guess a tag</button>
                         </div>
@@ -75,7 +81,7 @@
 
             <form action="#game-form" id="game-form">
                 <fieldset>
-                    <legend>end or reset game</legend>
+                    <legend>end/reset game</legend>
 
                     <button type="submit">end the game</button>
                     <button type="reset">start from fresh</button>
@@ -96,13 +102,20 @@
             </div>
 
             <div class="result">
-                <p>Game runs since
-                    <span id="game-timer" class="game-timer">0s</span>
-                </p>
+                <hgroup class="result-header">
+                    <h3>Results</h3>
+                    <p>Game runs since
+                        <span id="game-timer" class="game-timer">0s</span>
+                    </p>
+                </hgroup>
                 <p id="resultlist-explanation">
                     correctly guessed tags will be shown here (in the order they were entered):
                     <ul class="resultlist" id="correctly-guessed-tags" aria-labelledby="resultlist-explanation" aria-live="polite"></ul>
                 </p>
+                <div>
+                    and the tags you missed were:
+                    <ul class="resultlist" id="unmentioned-tags" aria-labell="these were the tags you did not enter into the game" aria-live="polite" aria-hidden="true"></ul>
+                </div>
             </div>
         </section>
 
@@ -129,11 +142,13 @@
 
     <footer class="container footer">
         <p>
-            this game is a shameless copy that i created for pure fun, after i heard a conference talk of ??? on youtube.
-            If you find it funny, share - otherwise go somewhere else and have fun there ;)
+            this game is a shameless copy of Paul Fosters HTML Tags Memory Test that i created for pure fun, after i heard a conference talk of
+            <a rel="noopener noreferrer" target="_blank" href="https://www.youtube.com/watch?v=W4SN8G0q3Vk">Manuel Matuzović on youtube</a>
+            and finding out, that Paul Fosters Game is not working completely anymore.
         </p>
         <p>
-            my name is Dominik Schopper and i did my best to make it as accessible as possible ... hope i did well enough for
+            If you find this game funny, share - otherwise go somewhere else and have fun there ;)
+            My name is Dominik Schopper and i did my best to make it as accessible as possible ... hope i did well enough for
             you to enjoy
         </p>
     </footer>

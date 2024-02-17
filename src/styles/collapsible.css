@@ -16,20 +16,22 @@
     overflow: visible;
 }
 
-.collapsible-header {
-    cursor: pointer;
+.collapsible-header > button {
+    background-color: transparent;
+    border: none;
+    height: 3ch;
+    width: 3ch;
+    padding: 0;
 }
 
-.collapsible-header:after {
+.collapsible-header > button:after {
     display: inline-block;
     content: " > ";
     transform: rotate(-90deg);
     color: darkgreen;
     font-size: 1.5rem;
     border: 1px solid darkgreen;
-    padding: 0 .25rem 0.75rem .5rem ;
     line-height: 1.6666rem;
-    margin: .125rem .5em;
     border-radius: 50%;
     aspect-ratio: 1 / 1;
     height: 2rem;
@@ -37,6 +39,6 @@
     transition: transform var(--timing) ease-out;
 }
 
-.collapsible[aria-expanded="true"] .collapsible-header:after {
+.collapsible[aria-expanded="true"] .collapsible-header > button:after {
     transform: rotate(90deg);
 }

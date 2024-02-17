@@ -1,4 +1,5 @@
 import useGuessedTags, {Guesses} from "./guessed-tags";
+import {allTags} from "./all-tags";
 
 describe('the guessedTags functions', () => {
     let guesses: Guesses;
@@ -47,6 +48,14 @@ describe('the guessedTags functions', () => {
         expect(guesses.addTagsFromString(input)).toBe(expectCorrect);
         expect(guesses.correct).toBe(expectCorrect);
         expect(guesses.incorrect).toBe(expectIncorrect);
+    });
+
+    test.each([
+        { input: 'a link', expectCorrect: 2 },
+        { input: 'html head body a link', expectCorrect: 5 }
+    ])(`should return the correct number of unmentioned tags ${allTags.length} - $expectCorrect`, ({input, expectCorrect}) => {
+        expect(guesses.addTagsFromString(input)).toBe(expectCorrect);
+        expect(guesses.notGuessed.length).toBe(allTags.length - expectCorrect);
     });
 
     it('should reset correct and incorrect to zero if reset() eas called', () => {

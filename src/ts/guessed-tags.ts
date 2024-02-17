@@ -5,63 +5,74 @@ export type GuessedError = string|null;
 export interface Guesses {
     correct: number;
     incorrect: number;
+    notGuessed: string[];
+    wrongEntries: string[];
+    doubleEntries: string[];
     list: string[];
-    add(tag: string): GuessedError;
+    lastAdded: string[];
+    add(tagOrTags: string): GuessedError;
     reset(): void;
-    /**
-     *
-     * @param tagString
-     * @returns {number} the number of strings successfully parsed
-     */
-    addTagsFromString(tagString: string): number;
+    parseTagString(tags: string): string[];
 }
 
 export default function useGuessedTags(): Guesses {
-    const guesses: string[] = [];
-    let incorrect = 0;
+    const correctGuesses: string[] = [];
+    const wrongGuesses: string[] = [];
+    const doubleGuesses: string[] = [];
 
     return {
         get correct() {
-            return guesses.length;
+            return correctGuesses.length;
         },
         get incorrect() {
-            return incorrect;
+            return wrongGuesses.length + doubleGuesses.length;
         },
         get list() {
-            return guesses.sort();
+            return correctGuesses.sort();
         },
-        add(tag: string): GuessedError {
-            if (tag.length === 0) {
+        get notGuessed(): string[] {
+            return tagNames.allUnmentionedTags(correctGuesses);
+        },
+        get wrongEntries() {
+            return wrongGuesses;
+        },
+        get doubleEntries() {
+            return doubleGuesses;
+        },
+        lastAdded: [],
+        parseTagString(tags: string): string[] {
+            return tags.toLowerCase()
+                .trim()
+                .split(/\W+/)
+                .filter(t => t.length > 0)
+                .map(t => normalizeTag(t));
+        },
+        add(tagOrTags: string): GuessedError {
+            const tags = this.parseTagString(tagOrTags);
+            if (tags.length === 0) {
                 return null;
             }
-            const normalizedTag = normalizeTag(tag);
-            if (!tagNames.isValid(normalizedTag)) {
-                incorrect += 1;
-                return `A Tag with the name ${tag} does not exist!`;
-            } else if (guesses.includes(normalizedTag)) {
-                incorrect += 1;
-                return `A Tag with the name ${tag} was already entered!`
-            }
-            guesses.push(normalizedTag)
-            return null;
+            let errors: string[] = [];
+            let correct: string[] = []
+            tags.forEach(tag => {
+                if (!tagNames.isValid(tag)) {
+                    wrongGuesses.push(tag);
+                    errors.push(`A Tag with the name ${tag} does not exist!`);
+                } else if (correctGuesses.includes(tag)) {
+                    doubleGuesses.push(tag);
+                    errors.push(`A Tag with the name ${tag} was already entered!`);
+                } else {
+                    correctGuesses.push(tag);
+                    correct.push(tag);
+                }
+            });
+            this.lastAdded = correct;
+            return errors.length > 0 ? errors.join('\n') : null;
         },
         reset() {
-            guesses.length = 0;
-            incorrect = 0;
-        },
-        addTagsFromString(tagString): number {
-            if (tagString.length === 0) {
-                return 0;
-            }
-            const tags = tagString.toLowerCase()
-                .trim()
-                .split(/\W+/);
-            tags.forEach(tag => {
-                this.add(tag);
-            });
-            return this.correct;
+            correctGuesses.length = 0;
+            wrongGuesses.length = 0;
+            doubleGuesses.length = 0;
         }
     };
 };
-
-

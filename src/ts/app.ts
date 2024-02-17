@@ -15,6 +15,7 @@ function initialize() {
         NO_OF_BAD_TAGS: '#no-wrong-tags',
         ALLTAGS_LENGTH: '[data-template="alltags.length"]',
         RESULT_LIST: '#correctly-guessed-tags',
+        WRONG_LIST: '#unmentioned-tags',
         GUESS_ERROR: '#tag-error',
         timer: '#game-timer'
     } as const;
@@ -26,6 +27,7 @@ function initialize() {
     doc.addEventListener('readystatechange', () => {
         const guessInput = doc.querySelector<HTMLInputElement>(selectors.GUESS_INPUT) ?? doc.createElement('input');
         const resultList = doc.querySelector<HTMLUListElement>(selectors.RESULT_LIST) ?? doc.createElement('ul');
+        const wrongList = doc.querySelector<HTMLUListElement>(selectors.WRONG_LIST) ?? doc.createElement('ul');
         const resultNo: HTMLInputElement | null = doc.querySelector<HTMLInputElement>(selectors.NO_OF_TAGS) ?? doc.createElement('input');
         const wrongNo: HTMLInputElement | null = doc.querySelector<HTMLInputElement>(selectors.NO_OF_BAD_TAGS) ?? doc.createElement('input');
         const errorElement = doc.querySelector(selectors.GUESS_ERROR) ?? doc.createElement('p');
@@ -34,7 +36,7 @@ function initialize() {
 
         function replaceCompleteTagLength(tags: string[]) {
             allLengthElements.forEach(el => {
-                el.textContent = tags.length.toString(10);
+                el.textContent = `${tags.length}`;
             });
         }
         replaceCompleteTagLength(allTags);
@@ -57,7 +59,7 @@ function initialize() {
             const err = guesses.add(newGuessedTag);
             errorElement.textContent = '';
             if (err === null) {
-                renderGuessedTagsTo(resultList, newGuessedTag);
+                guesses.lastAdded.forEach(t => renderGuessedTagsTo(resultList, t));
             } else {
                 errorElement.textContent = err;
             }
@@ -69,15 +71,18 @@ function initialize() {
             guessInput.focus();
         });
 
+        // this gets submitted when the user clicks to end the game
         doc.querySelector(selectors.GAME_FORM)?.addEventListener('submit', (ev) => {
             ev.preventDefault();
             if (game.isRunning) {
                 game.stop();
+                guesses.notGuessed.forEach(t => renderGuessedTagsTo(wrongList, t));
                 clearInterval(timerId);
             }
             guessInput.focus();
-        })
+        });
 
+        // this is triggered when the user clicks to start from fresh
         doc.querySelector(selectors.GAME_FORM)?.addEventListener('reset', (ev) => {
             ev.preventDefault();
             if (game.isRunning) {
@@ -88,13 +93,13 @@ function initialize() {
             game.reset();
             guesses.reset();
 
-            resetGuessedTags(resultList);
+            resetList(resultList);
             updateTimeElapsed(gameTimer, 0);
             setValueOf(resultNo, guesses.correct);
             setValueOf(wrongNo, guesses.incorrect);
 
             guessInput.focus();
-        })
+        });
     });
 
     function updateTimeElapsed(el: HTMLElement, timeInSecs: number) {
@@ -113,11 +118,11 @@ initialize();
 function renderGuessedTagsTo(ul: HTMLUListElement, nextGoodGuess: string) {
     const li = document.createElement('li');
     li.id = `guessed-tag-${nextGoodGuess}`;
-    li.innerText = nextGoodGuess;
+    li.innerText = nextGoodGuess.toLowerCase();
     ul.appendChild(li);
 }
 
-function resetGuessedTags(ul: HTMLUListElement) {
+function resetList(ul: HTMLUListElement) {
     ul.innerHTML = '';
 }
 

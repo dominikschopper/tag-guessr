@@ -66,15 +66,19 @@ function createBaseGame(): TagGuessrGame {
     };
 }
 
-export type GameEventType = 'start' | 'stop' | 'reset';
+function getAllUnguessedTags(): string[] {
+    return [];
+}
+
+export type GameEventType = 'onstart' | 'onstop' | 'onreset';
 
 function createTimedGameFrom(game: TagGuessrGame, timeout: 90000 | 60000): TagGuessrGameTimed {
 
     type CallbackStore = Record<GameEventType, (() => void)[]>;
     const callbacks: CallbackStore  = {
-        stop: [],
-        start: [],
-        reset: []
+        onstop: [],
+        onstart: [],
+        onreset: []
     };
 
     function handleCallbacks(type: GameEventType) {
@@ -88,15 +92,15 @@ function createTimedGameFrom(game: TagGuessrGame, timeout: 90000 | 60000): TagGu
         },
         start() {
             setTimeout(function() { timedGame.stop() }, timeout);
-            handleCallbacks('start');
+            handleCallbacks('onstart');
             game.start();
         },
         stop() {
-            handleCallbacks('stop');
+            handleCallbacks('onstop');
             game.stop();
         },
         reset() {
-            handleCallbacks('reset');
+            handleCallbacks('onreset');
             game.stop();
         },
         elapsedTime: game.elapsedTime,
