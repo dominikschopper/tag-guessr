@@ -1,4 +1,8 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const { gamerTag } = useAuth();
+gamerTag.value = '';
+navigateTo('/');
+</script>
 
 <template>
   <div>

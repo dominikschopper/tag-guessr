@@ -1,9 +1,7 @@
 <script lang="ts" setup></script>
 
 <template>
-  <div>
-    Page: login
-  </div>
+    <Login />
 </template>
 
 <style scoped></style>
