@@ -1,0 +1,8 @@
+@import './_reset.css';
+@import './_colors.css';
+@import './_font.css';
+
+html, body {
+    font-family: FiraCode;
+    font-size: 16px;
+}

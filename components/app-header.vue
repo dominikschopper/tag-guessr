@@ -3,8 +3,11 @@ import { AppHeader, AppFooter, LangSwitch } from '../.nuxt/components';
 
 <template>
 <header>
-    <div class="title">
-        App Header
+    <div>
+        <hgroup class="title">
+            <h1>Tag Guessr</h1>
+            <p>How many HTML tags do you know?</p>
+        </hgroup>
         <LangSwitch />
     </div>
     <MainNavigation />
